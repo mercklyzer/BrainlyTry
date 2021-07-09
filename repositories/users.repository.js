@@ -46,6 +46,20 @@ let users = {
     },
 }
 
+// let users = [
+//     {
+//         userId: 1,
+//         username: "merck123",
+//         password: "12345",
+//         email: "merck123@gmail.com",
+//         birthday: "12-12-1999",
+//         profilePicture: "",
+//         currentPoints: 90,
+//         level: "Senior High",
+//         answersCtr: 0,
+//         thanksCtr: 0,
+//     }
+// ]
 
 
 const repository = {

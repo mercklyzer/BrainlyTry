@@ -18,7 +18,7 @@ router.get('/:id', (req,res,next) => {
 //EDITS a single question
 router.put('/:id/edit', (req,res,next) => {
   console.log("EDIT");
-  controller.editQuestion(req, res, questionId, newQuestion)
+  controller.editQuestion(req, res)
 })
 
 // DELETES a single question

@@ -1,4 +1,4 @@
-let answersCtr = 2
+let answersCtr = 7
 
 let answers = {
     1: {
@@ -115,11 +115,13 @@ const repository = {
                 const keys = Object.keys(answers)
                 // console.log("logging");
                 for(let i = 0; i < keys.length; i++){
+                    console.log("inside loop");
                     let key = keys[i]
                     if(answers[key].questionId === questionId){
                         retrievedAnswers[key] = answers[key]
                     }
                 }
+                console.log("outside loop");
                 fulfill(retrievedAnswers)
             }
             catch{

@@ -5,7 +5,6 @@ const controller = require('../controllers/main.controller')
 // verify user if registered
 router.post('/', (req, res, next) => {
   controller.login(req, res)
-  next()
 })
 
 module.exports = router;

@@ -1,4 +1,4 @@
-let commentsCtr = 0
+let commentsCtr = 8
 let comments = {
     1: {
         userId: 1,
@@ -48,12 +48,18 @@ let comments = {
         answerId: null,
         comment: "That is so cool bro."
     },
+    9: {
+        userId: 1,
+        questionId: 7,
+        answerId: null,
+        comment: "New comment added."
+    },
 }
 
 const repository = {
     // GET ALL COMMENTS given a questionId or answerId
     getAllComments : (questionId, answerId) => {
-        console.log(answerId);
+        // console.log(answerId);
         return new Promise((fulfill,reject) => {
             if(questionId && answerId){
                 reject('Comment can\'t have both questionId and answerId')

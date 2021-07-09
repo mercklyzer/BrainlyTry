@@ -86,7 +86,7 @@ const controller = {
         const dateObj = new Date()
         const date = `${dateObj.getDate()}-${dateObj.getMonth()+1}-${dateObj.getFullYear()}`
         req.body.data.date = date
-        req.body.data.askerId = req.query.userId //NOTE THAT THIS IS TO BE CHANGED (for now set to fix 1)
+        req.body.data.askerId = Number(req.query.userId) //NOTE THAT THIS IS TO BE CHANGED (use sessions)
         questionsRepository.addQuestion(req.body.data)
         .then(() => {
             res.status(200).json({
@@ -107,55 +107,76 @@ const controller = {
         const questionId = req.params.id
         questionsRepository.getQuestion(Number(questionId))
         .then((question) => {
-            // console.log(question);
-            // get the answers array
-            answersRepository.getAllAnswers(Number(questionId))
-            .then((answers) => {
-                // for every answer, find all comments
-                let answersKeys = Object.keys(answers)
+            // GET ALL COMMENTS FOR THIS QUESTION
+            commentsRepository.getAllComments(Number(questionId), null)
+            .then((comments) => {
+                question.comments = comments
 
-                // list of comments of each answer
-                let answersCommentsList = []
-                let answersCommentsCtr = 0
-                answersCommentsList.length = answersKeys.length
+                // get the answers array
+                answersRepository.getAllAnswers(Number(questionId))
+                .then((answers) => {
+                    // for every answer, find all comments
+                    let answersKeys = Object.keys(answers)
+                    console.log(answersKeys);
 
-                new Promise((commentsFulfill, commentsReject) => {
-                    for(let i = 0; i < answersKeys.length; i++){
-                        let answerId = answersKeys[i]
-                        commentsRepository.getAllComments(null, Number(answerId))
-                        .then((comments) => {
-                            answersCommentsList[i] = comments
-                            console.log(comments);
-                            answersCommentsCtr++
-                            if(answersCommentsCtr === answersKeys.length){
-                                commentsFulfill(answersCommentsList)
-                            }
+                    // list of comments of each answer
+                    let answersCommentsList = []
+                    let answersCommentsCtr = 0
+                    answersCommentsList.length = answersKeys.length
+
+                    // Promise to get all comments of each answer
+                    new Promise((commentsFulfill, commentsReject) => {
+                        if(answersKeys.length > 0){
+                            for(let i = 0; i < answersKeys.length; i++){
+                                let answerId = answersKeys[i]
+                                commentsRepository.getAllComments(null, Number(answerId))
+                                .then((comments) => {
+                                    answersCommentsList[i] = comments
+                                    console.log(comments);
+                                    answersCommentsCtr++
+                                    if(answersCommentsCtr === answersKeys.length){
+                                        commentsFulfill(answersCommentsList)
+                                    }
+                                })
+                            }   
+                        }
+                        // if no answer, just fulfill an empty object
+                        else{
+                            commentsFulfill({})
+                        }
+
+                        
+                    })
+                    .then((allCommentsList) => {
+                        for(let i = 0; i < answersKeys.length; i++){
+                            let answerId = answersKeys[i]
+                            answers[answerId].comments = allCommentsList[i]
+                        }
+                        question.answers = answers
+                        res.status(200).json({
+                            data: question
                         })
-                    }
-                })
-                .then((allCommentsList) => {
-                    for(let i = 0; i < answersKeys.length; i++){
-                        let answerId = answersKeys[i]
-                        answers[answerId].comments = allCommentsList[i]
-                    }
-                    question.answers = answers
-                    res.status(200).json({
-                        data: question
                     })
                 })
-
-                
-
-
-
+                .catch(() => {
+                    res.status(404).json({
+                        error: {
+                            message: "Answers to this question caused the error."
+                        }
+                    })
+                })
             })
             .catch(() => {
                 res.status(404).json({
                     error: {
-                        message: "Answers to this question caused the error."
+                        message: "Cannot retrieve comments for this question."
                     }
                 })
             })
+
+
+            // console.log(question);
+
 
 
         })
@@ -172,7 +193,7 @@ const controller = {
     editQuestion : (req, res) => {
         const questionId = req.params.id
         const newQuestion = req.body.data.newQuestion
-        questionsRepository.editQuestion(questionId, newQuestion)
+        questionsRepository.editQuestion(Number(questionId), newQuestion)
         .then((updatedQuestion) => {
             res.status(200).json({
                 data: updatedQuestion

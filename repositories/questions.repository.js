@@ -65,6 +65,19 @@ let questions = {
     },
 }
 
+// let questions = [
+//      {
+//         questionId: 1,
+//         question: "When did Rizal die?",
+//         image: "",
+//         subject: "history",
+//         date: "7-5-2021",
+//         lastEdited: "",
+//         rewardPoints: 5,
+//         askerId: 1,
+//     }
+// ]
+
 let repository = {
     // GETS ALL QUESTIONS
     getAllQuestions: () => {
@@ -139,6 +152,8 @@ let repository = {
 
     // CHECK IF QUESTION ID and ASKER ID match
     isQuestionIdAndAskerIdMatch : (questionId, askerId) => {
+        console.log(askerId);
+        console.log(questions[questionId].askerId);
         return new Promise((fulfill, reject) => {
             const storedAskerId = questions[questionId].askerId
             if(storedAskerId === askerId){

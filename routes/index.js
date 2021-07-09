@@ -5,7 +5,7 @@ const controller = require('../controllers/main.controller')
 // assuming that user is logged in, display all questions
 router.get('/', (req, res, next) => {
   controller.displayAllQuestions(req, res)
-  next()
+  // next()
 })
 
 module.exports = router;
