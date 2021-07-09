@@ -1,9 +1,11 @@
 let answersCtr = 7
 
-let answers = {
-    1: {
+let answers = [
+    {
+        answerId : 1,
         questionId : 1,
-        askerId : 1,
+        userId : 1,
+        username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
         totalRating: 0,
@@ -11,9 +13,11 @@ let answers = {
         ratingCtr: 0,
         isBrainliest: false,
     },
-    2: {
+    {
+        answerId : 2,
         questionId : 7,
-        askerId : 3,
+        userId : 3,
+        username: "lyzer0101",
         answer: "I have a dream.",
         date: '7-8-2021',
         totalRating: 0,
@@ -21,9 +25,11 @@ let answers = {
         ratingCtr: 0,
         isBrainliest: false,
     },
-    3: {
+    {
+        answerId : 3,
         questionId : 7,
-        askerId : 1,
+        userId : 1,
+        username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
         totalRating: 0,
@@ -31,9 +37,11 @@ let answers = {
         ratingCtr: 0,
         isBrainliest: false,
     },
-    4: {
+    {
+        answerId : 4,
         questionId : 7,
-        askerId : 1,
+        userId : 1,
+        username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
         totalRating: 0,
@@ -41,9 +49,11 @@ let answers = {
         ratingCtr: 0,
         isBrainliest: false,
     },
-    5: {
+    {
+        answerId : 5,
         questionId : 7,
-        askerId : 1,
+        userId : 1,
+        username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
         totalRating: 0,
@@ -51,9 +61,11 @@ let answers = {
         ratingCtr: 0,
         isBrainliest: false,
     },
-    6: {
+    {
+        answerId : 6,
         questionId : 7,
-        askerId : 1,
+        userId : 1,
+        username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
         totalRating: 0,
@@ -61,9 +73,11 @@ let answers = {
         ratingCtr: 0,
         isBrainliest: false,
     },
-    7: {
+    {
+        answerId : 7,
         questionId : 7,
-        askerId : 1,
+        userId : 1,
+        username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
         totalRating: 0,
@@ -71,11 +85,11 @@ let answers = {
         ratingCtr: 0,
         isBrainliest: false,
     },
-}
+]
 
 const repository = {
     // ADDS an answer
-    addAnswer: (askerId, questionId, answer) => {
+    addAnswer: (userId, questionId, answer) => {
         return new Promise((fulfill, reject) => {
             try{
                 answersCtr++
@@ -86,8 +100,9 @@ const repository = {
     
                 // create answer
                 const answerObject = {
+                    answerId: answersCtr,
                     questionId : questionId,
-                    askerId : askerId,
+                    userId : userId,
                     answer: answer,
                     date: date,
                     totalRating: 0,
@@ -97,12 +112,12 @@ const repository = {
                 }
     
                 // save answer
-                answers[answersCtr] = answerObject
+                answers.push(answerObject)
                 console.log(answers);
-                fulfill(answers[answersCtr])
+                fulfill(answerObject)
             }
             catch{
-                reject()
+                reject(new Error("Answer not stored."))
             }
         })
     },
@@ -111,21 +126,37 @@ const repository = {
     getAllAnswers: (questionId) => {
         return new Promise((fulfill, reject) => {
             try{
-                let retrievedAnswers = {}
-                const keys = Object.keys(answers)
-                // console.log("logging");
-                for(let i = 0; i < keys.length; i++){
-                    console.log("inside loop");
-                    let key = keys[i]
-                    if(answers[key].questionId === questionId){
-                        retrievedAnswers[key] = answers[key]
+                let retrievedAnswers =[]
+                
+                // push all questions that match the questionId
+                for(let i = 0; i < answers.length; i++){
+                    if(answers[i].questionId === questionId){
+                        retrievedAnswers.push(answers[i])
                     }
                 }
-                console.log("outside loop");
                 fulfill(retrievedAnswers)
             }
             catch{
-                reject()
+                reject(new Error("Error loading the answers for this question."))
+            }
+        })
+    },
+
+    // GET all answers of a specific user
+    getAnswersByUser : (userId) => {
+        return new Promise((fulfill, reject) => {
+            try{
+                let retrievedAnswers = []
+
+                for(let i = 0; i < answers.length; i++){
+                    if(answers[i].userId === userId){
+                        retrievedAnswers.push(answers[i])
+                    }
+                }
+                fulfill(retrievedAnswers)
+            }
+            catch{
+                reject(new Error("Cannot retrieve answers by this user."))
             }
         })
     }

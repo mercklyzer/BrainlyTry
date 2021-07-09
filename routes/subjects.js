@@ -9,8 +9,9 @@ router.get('/', (req, res, next) => {
   })
 })
 
-router.get('/:subject', (req,res,next) => {
-    controller.viewSubject(req,res)
+// display questions by subject
+router.get('/:subject/questions', (req,res,next) => {
+    controller.getQuestionsBySubject(req,res)
 })
 
 module.exports = router;

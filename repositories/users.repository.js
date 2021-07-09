@@ -1,6 +1,7 @@
 let userId = 4
-let users = {
-    1: {
+let users = [
+    {
+        userId: 1, 
         username: "merck123",
         password: "12345",
         email: "merck123@gmail.com",
@@ -11,7 +12,8 @@ let users = {
         answersCtr: 0,
         thanksCtr: 0,
     },
-    2: {
+    {
+        userId: 2,
         username: "lababa11",
         password: "12345",
         email: "lalabbaa@gmail.com",
@@ -22,7 +24,8 @@ let users = {
         answersCtr: 0,
         thanksCtr: 0,
     },
-    3: {
+    {
+        userId: 3,
         username: "lyzer0101",
         password: "xdmap123",
         email: "rezyl1116@gmail.com",
@@ -33,10 +36,11 @@ let users = {
         answersCtr: 32,
         thanksCtr: 0,
     },
-    4: {
-        username: "lyzer0101",
+    {
+        userId: 4,
+        username: "nani0101",
         password: "xdmap123",
-        email: "rezyl1116@gmail.com",
+        email: "nani@gmail.com",
         birthday: "31-1-2001",
         profilePicture: "",
         currentPoints: 257,
@@ -44,71 +48,61 @@ let users = {
         answersCtr: 12,
         thanksCtr: 0,
     },
-}
-
-// let users = [
-//     {
-//         userId: 1,
-//         username: "merck123",
-//         password: "12345",
-//         email: "merck123@gmail.com",
-//         birthday: "12-12-1999",
-//         profilePicture: "",
-//         currentPoints: 90,
-//         level: "Senior High",
-//         answersCtr: 0,
-//         thanksCtr: 0,
-//     }
-// ]
-
+]
 
 const repository = {
     // checks if email is already used
     isEmailAvailable: (email) => {
         return new Promise((fulfill, reject) => {
-            const keys = Object.keys(users)
-            keys.forEach((user) => {
-                if(users[user].email == email){
-                    reject()
+            for(let i = 0; i < users.length; i++){
+                console.log(users[i].email +" " + email);
+                if(users[i].email === email){
+                    reject(new Error('Email is already taken.'))
                     return
                 }
-            })
+            }
             fulfill()
         })
     },
 
     isUsernameAvailable: (username) => {
         return new Promise((fulfill, reject) => {
-            const keys = Object.keys(users)
-            keys.forEach((user) => {
-                // console.log(user + " " + username);
-                if(users[user].username == username){
-                    reject()
+            for(let i = 0; i < users.length; i++){
+                if(users[i].username === username){
+                    reject(new Error('Username is already taken.'))
                     return
                 }
-            })
+            }
             fulfill()
         })
     },
 
     // adds a user to the users object
     addUser: (newUser) => {
-        userId++
-        users[userId] = newUser
-        console.log(users);
-        return userId
+        return new Promise((fulfill, reject) => {
+            try{
+                userId++
+                newUser.userId = userId
+                users.push(newUser)
+                console.log(users);
+                fulfill(newUser)
+            }
+            catch{
+                reject(new Error('Unsuccessful adding user.'))
+            }
+        })
+        
     },
 
     //checks if login credentials are registered
     login: (usernameOrEmail, password) => {
         return new Promise((fulfill, reject) => {
-            const keys = Object.keys(users)
             let isRegistered = false
 
             // check if user is registered
-            for(let i = 0; i < keys.length; i++){
-                if(users[keys[i]].username === usernameOrEmail || users[keys[i]].email === usernameOrEmail){
-                    if(users[keys[i]].password === password){
+            for(let i = 0; i < users.length; i++){
+                if(users[i].username === usernameOrEmail || users[i].email === usernameOrEmail){
+                    if(users[i].password === password){
                         isRegistered = true
                         break
                     }
@@ -122,7 +116,53 @@ const repository = {
                 reject()
             }
         })
-    }
+    },
+
+    // GETS the username based on userId
+    getUsername: (userId) => {
+        return new Promise((fulfill, reject) => {
+            const index = users.map((user) => user.userId).indexOf(userId)
+            console.log("index: ", index);
+            if(index > -1){
+                fulfill(users[index].username)
+            }
+            else{
+                reject(new Error("Cannot get username."))
+            }
+        })
+
+
+        
+    },
+
+    // GETS a password of a username
+    getPasswordByUsername: (username) => {
+        return new Promise((fulfill, reject) => {
+            const index = users.map((user) => user.username).indexOf(username)
+            // if not found
+            if(index === -1){
+                reject(new Error("Username is not registered."))
+            }
+            else{
+                fulfill(users[index].password)
+            }
+        })
+    },
+    // GETS the password based of an email
+    getPasswordByEmail: (email) => {
+        return new Promise((fulfill, reject) => {
+            const index = users.map((user) => user.email).indexOf(email)
+            // if not found
+            if(index === -1){
+                reject(new Error("Email is not registered."))
+            }
+            else{
+                fulfill(users[index].password)
+            }
+        })
+    },
+
+
 }
 
 module.exports = repository

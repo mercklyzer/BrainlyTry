@@ -12,6 +12,4 @@ router.post('/', (req, res, next) => {
     controller.addUser(req,res)
 })
 
-
-
 module.exports = router;

@@ -9,8 +9,8 @@ var indexRouter = require('./routes/index');
 var signupRouter = require('./routes/signup');
 var loginRouter = require('./routes/login');
 var usersRouter = require('./routes/users');
-var questionRouter = require('./routes/question') //used for viewing a single question or adding a question
-var subjectRouter = require('./routes/subject') //used for viewing a single question or adding a question
+var questionsRouter = require('./routes/questions') //used for viewing a single question or adding a question
+var subjectsRouter = require('./routes/subjects') //used for viewing a single question or adding a question
 
 var app = express();
 
@@ -28,8 +28,8 @@ app.use('/', indexRouter);
 app.use('/signup', signupRouter);
 app.use('/login', loginRouter);
 app.use('/users', usersRouter);
-app.use('/question', questionRouter);
-app.use('/subject', subjectRouter);
+app.use('/questions', questionsRouter);
+app.use('/subjects', subjectsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

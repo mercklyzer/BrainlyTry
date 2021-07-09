@@ -2,6 +2,11 @@ var express = require('express');
 var router = express.Router();
 const controller = require('../controllers/main.controller')
 
+// DISPLAY ALL QUESTIONS
+router.get('/', function(req, res, next) {
+  controller.displayAllQuestions(req,res)
+});
+
 // add a single question
 router.post('/add', function(req, res, next) {
   console.log("ADD");
@@ -29,7 +34,7 @@ router.delete('/:id/delete', (req,res,next) => {
 
 // ANSWERS a question
 router.post('/:id/answer', (req, res, next) => {
-  controller.answerQuestion(req, res)
+  controller.addAnswer(req, res)
 })
 
 module.exports = router;

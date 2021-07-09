@@ -1,60 +1,78 @@
 let commentsCtr = 8
-let comments = {
-    1: {
+let comments = [
+    {
+        commentId: 1,
         userId: 1,
+        username: "merck123",
         questionId: 1,
         answerId: null,
         comment: "How are we suppose to answer that?"
     },
-    2: {
+    {
+        commentId: 2,
         userId: 2,
+        username: "lababa11",
         questionId: 1,
         answerId: null,
         comment: "Same question bro..."
     },
-    3: {
+    {
+        commentId: 3,
         userId: 3,
+        username: "lyzer0101",
         questionId: 1,
         answerId: null,
         comment: "Ewan ko ba tol"
     },
-    4: {
+    {
+        commentId: 4,
         userId: 1,
+        username: "merck123",
         questionId: 7,
         answerId: null,
         comment: "Im confuuuseddd."
     },
-    5: {
+    {
+        commentId: 5,
         userId: 4,
+        username: "nani0101",
         questionId: 7,
         answerId: null,
         comment: "I can give you a hint."
     },
-    6: {
+    {
+        commentId: 6,
         userId: 1,
+        username: "merck123",
         questionId: null,
         answerId: 2,
         comment: "Nice answer"
     },
-    7: {
+    {
+        commentId: 7,
         userId: 1,
+        username: "merck123",
         questionId: null,
         answerId: 2,
         comment: "How did you do that?"
     },
-    8: {
+    {
+        commentId: 8,
         userId: 1,
+        username: "merck123",
         questionId: 2,
         answerId: null,
         comment: "That is so cool bro."
     },
-    9: {
+    {
+        commentId: 9,
         userId: 1,
+        username: "merck123",
         questionId: 7,
         answerId: null,
         comment: "New comment added."
     },
-}
+]
 
 const repository = {
     // GET ALL COMMENTS given a questionId or answerId
@@ -66,28 +84,22 @@ const repository = {
             }
             else{
                 try{
-                    let retrievedComments = {}
+                    let retrievedComments = []
                     let findId = questionId? questionId : answerId
     
                     // find comments with same findId and add it to retrievedComments
-                    const keys = Object.keys(comments)
-                    for(let i = 0; i < keys.length; i++){
-                        let key = keys[i]
-                        // console.log(comments[key]);
-                        if(questionId && comments[key].questionId === findId){
-                            retrievedComments[key] = comments[key]
+                    for(let i = 0; i < comments.length; i++){
+                        if(questionId && comments[i].questionId === findId){
+                            retrievedComments.push(comments[i])
                         }
-                        else if(answerId && comments[key].answerId === findId){
-                            retrievedComments[key] = comments[key]
+                        else if(answerId && comments[i].answerId === findId){
+                            retrievedComments.push(comments[i])
                         }
-                        console.log(key)
-                        console.log(retrievedComments[key]);
                     }
-                    console.log(retrievedComments);
                     fulfill(retrievedComments)
                 }
                 catch{
-                    reject("Error retrieving comments.")
+                    reject(new Error("Error loading the comments for each answer."))
                 }
             }
         })
