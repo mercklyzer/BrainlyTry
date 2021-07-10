@@ -6,7 +6,8 @@ let comments = [
         username: "merck123",
         questionId: 1,
         answerId: null,
-        comment: "How are we suppose to answer that?"
+        comment: "How are we suppose to answer that?",
+        date: '7-10-2021'
     },
     {
         commentId: 2,
@@ -14,7 +15,8 @@ let comments = [
         username: "lababa11",
         questionId: 1,
         answerId: null,
-        comment: "Same question bro..."
+        comment: "Same question bro...",
+        date: '7-10-2021'
     },
     {
         commentId: 3,
@@ -22,7 +24,8 @@ let comments = [
         username: "lyzer0101",
         questionId: 1,
         answerId: null,
-        comment: "Ewan ko ba tol"
+        comment: "Ewan ko ba tol",
+        date: '7-10-2021'
     },
     {
         commentId: 4,
@@ -30,7 +33,8 @@ let comments = [
         username: "merck123",
         questionId: 7,
         answerId: null,
-        comment: "Im confuuuseddd."
+        comment: "Im confuuuseddd.",
+        date: '7-10-2021'
     },
     {
         commentId: 5,
@@ -38,7 +42,8 @@ let comments = [
         username: "nani0101",
         questionId: 7,
         answerId: null,
-        comment: "I can give you a hint."
+        comment: "I can give you a hint.",
+        date: '7-10-2021'
     },
     {
         commentId: 6,
@@ -46,7 +51,8 @@ let comments = [
         username: "merck123",
         questionId: null,
         answerId: 2,
-        comment: "Nice answer"
+        comment: "Nice answer",
+        date: '7-10-2021'
     },
     {
         commentId: 7,
@@ -54,7 +60,8 @@ let comments = [
         username: "merck123",
         questionId: null,
         answerId: 2,
-        comment: "How did you do that?"
+        comment: "How did you do that?",
+        date: '7-10-2021'
     },
     {
         commentId: 8,
@@ -62,7 +69,8 @@ let comments = [
         username: "merck123",
         questionId: 2,
         answerId: null,
-        comment: "That is so cool bro."
+        comment: "That is so cool bro.",
+        date: '7-10-2021'
     },
     {
         commentId: 9,
@@ -70,7 +78,8 @@ let comments = [
         username: "merck123",
         questionId: 7,
         answerId: null,
-        comment: "New comment added."
+        comment: "New comment added.",
+        date: '7-10-2021'
     },
 ]
 
@@ -101,6 +110,23 @@ const repository = {
                 catch{
                     reject(new Error("Error loading the comments for each answer."))
                 }
+            }
+        })
+    },
+
+    addComment : (comment) => {
+        return new Promise((fulfill, reject) => {
+            try{
+                commentsCtr++
+                comments.commentId = commentsCtr
+       
+                // save answer
+                comments.push(comment)
+                console.log(comments);
+                fulfill(comment)
+            }
+            catch{
+                reject(new Error("Comment not stored."))
             }
         })
     }

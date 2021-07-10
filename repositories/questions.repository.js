@@ -144,6 +144,20 @@ let repository = {
         })
     },
 
+    // CHECKS if question exists
+    isQuestionExist: (questionId) => {
+        return new Promise((fulfill, reject) => {
+            const index = questions.map((question) => question.questionId).indexOf(questionId);
+            // if found
+            if(index > -1){
+                fulfill()
+            }
+            else{
+                reject(new Error("Question does not exist."))
+            }
+        })
+    },
+
     // EDITS A SINGLE QUESTION BASED ON ID
     editQuestion: (questionId, newQuestion) => {
         return new Promise((fulfill, reject) => {
@@ -194,19 +208,14 @@ let repository = {
             console.log(questions);
             const index = questions.map((question) => question.questionId).indexOf(questionId)
             console.log("index: " + index);
-            // if NOT found
-            if(index === -1){
-                reject(new Error("Unable to delete the question."))
-                return
-            }
-            
-            try{
+            // if found
+            if(index > -1){
                 const question = questions.splice(index,1)
                 console.log(questions);
                 fulfill(question)
             }
-            catch{
-                reject()
+            else{
+                reject(new Error("Unable to delete the question."))
             }
         })
     },
@@ -215,13 +224,11 @@ let repository = {
     getQuestionsByUser : (userId) => {
         return new Promise((fulfill, reject) => {
             try{
-                let retrievedQuestions = {}
-                const keys = Object.keys(questions)
+                let retrievedQuestions = []
 
-                for(let i = 0; i < keys.length; i++){
-                    let key = keys[i]
-                    if(questions[key].askerId === userId){
-                        retrievedQuestions[key] = questions[key]
+                for(let i = 0; i < questions.length; i++){
+                    if(questions[i].askerId === userId){
+                        retrievedQuestions.push(questions[i])
                     }
                 }
                 fulfill(retrievedQuestions)

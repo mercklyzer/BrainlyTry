@@ -89,32 +89,17 @@ let answers = [
 
 const repository = {
     // ADDS an answer
-    addAnswer: (userId, questionId, answer) => {
+    addAnswer: (answer) => {
         return new Promise((fulfill, reject) => {
             try{
                 answersCtr++
-
-                // get date
-                const dateObj = new Date()
-                const date = `${dateObj.getDate()}-${dateObj.getMonth()+1}-${dateObj.getFullYear()}`
-    
-                // create answer
-                const answerObject = {
-                    answerId: answersCtr,
-                    questionId : questionId,
-                    userId : userId,
-                    answer: answer,
-                    date: date,
-                    totalRating: 0,
-                    averageRating: 0,
-                    ratingCtr: 0,
-                    isBrainliest: false,
-                }
+                answer.answerId = answersCtr
     
                 // save answer
-                answers.push(answerObject)
+                answers.push(answer)
+                console.log("answer pushed");
                 console.log(answers);
-                fulfill(answerObject)
+                fulfill(answer)
             }
             catch{
                 reject(new Error("Answer not stored."))
@@ -130,11 +115,13 @@ const repository = {
                 
                 // push all questions that match the questionId
                 for(let i = 0; i < answers.length; i++){
+                    console.log(answers[i].questionId);
                     if(answers[i].questionId === questionId){
                         retrievedAnswers.push(answers[i])
                     }
                 }
                 fulfill(retrievedAnswers)
+                console.log(retrievedAnswers);
             }
             catch{
                 reject(new Error("Error loading the answers for this question."))
@@ -159,7 +146,84 @@ const repository = {
                 reject(new Error("Cannot retrieve answers by this user."))
             }
         })
-    }
+    },
+
+    isQuestionIdAndAnswerIdMatch: (questionId, answerId) => {
+        return new Promise((fulfill, reject) => {
+            const index = answers.map((answer) => answer.answerId).indexOf(answerId);
+            // if found
+            if(index > -1){
+                const storedQuestionId = answers[index].questionId
+                if(storedQuestionId === questionId){
+                    fulfill()
+                }
+                else{
+                    reject(new Error("Answer does not exist in this specific question."))
+                }
+            }
+            else{
+                reject(new Error("Answer not found."))
+            }
+        })
+    },
+
+    isAnswerIdAndUserIdMatch: (answerId, userId) => {
+        return new Promise((fulfill, reject) => {
+            const index = answers.map((answer) => answer.answerId).indexOf(answerId);
+            // if found
+            if(index > -1){
+                const storedUserId = answers[index].userId
+                if(storedUserId === userId){
+                    fulfill()
+                }
+                else{
+                    reject(new Error("User does not own the answer."))
+                }
+            }
+            else{
+                reject(new Error("Answer not found."))
+            }
+        })
+    },
+
+    // EDITS AN ANSWER BASED ON ANSWERID
+    editAnswer: (answerId, newAnswer) => {
+        return new Promise((fulfill, reject) => {
+            const index = answers.map((answer) => answer.answerId).indexOf(answerId);
+
+            // if found
+            if(index > -1){
+                //get date today
+                const dateObj = new Date()
+                const date = `${dateObj.getDate()}-${dateObj.getMonth()+1}-${dateObj.getFullYear()}`
+                answers[index].answer = newAnswer
+                answers[index].lastEdited = date
+                fulfill(answers[index])
+            }
+            // if NOT found
+            else{
+                reject(new Error("Cannot edit the answer."))
+            }
+        })
+    },
+
+    // DELETES an answer
+    deleteAnswer : (answerId) => {
+        return new Promise((fulfill, reject) => {
+            const index = answers.map((answer) => answer.answerId).indexOf(answerId)
+
+            // if found
+            if(index > -1){
+                const answer = answers.splice(index,1)
+                console.log(answers);
+                fulfill(answer)
+                
+            }
+            else{
+                reject(new Error("Unable to delete the answer."))
+            }
+        })
+    },
 }
 
 module.exports = repository

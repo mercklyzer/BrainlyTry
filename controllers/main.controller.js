@@ -104,6 +104,7 @@ const controller = {
         const dateObj = new Date()
         const date = `${dateObj.getDate()}-${dateObj.getMonth()+1}-${dateObj.getFullYear()}`
         req.body.data.date = date
+        req.body.data.lastEdited = ""
         req.body.data.askerId = Number(req.query.userId) //NOTE THAT THIS IS TO BE CHANGED (use sessions)
 
         // get the username of using the provided userId
@@ -137,7 +138,9 @@ const controller = {
             let question = await questionsRepository.getQuestion(Number(questionId))
             let comments = await commentsRepository.getAllComments(Number(questionId), null)
             question.comments = comments
+            console.log(comments);
             let answers = await answersRepository.getAllAnswers(Number(questionId))
+            console.log(answers);
 
             let answersCommentsList = []
             let answersCommentsCtr = 0
@@ -254,22 +257,87 @@ const controller = {
         })
     },
 
-    // ANSWERS a question
+    // ANSWERS a question (adds an answer)
     addAnswer: (req, res) => {
         const userId = req.query.userId
         const questionId = req.params.id
-        const answer = req.body.data.answer
 
-        usersRepository.getUsername(Number(userId))
+        // initialize the answer object
+        const answer = req.body.data
+        answer.questionId = Number(questionId)
+        answer.userId = Number(userId)
+
+        // initialize date
+        const dateObj = new Date()
+        const date = `${dateObj.getDate()}-${dateObj.getMonth()+1}-${dateObj.getFullYear()}`
+        answer.date = date
+
+        // initialize defaults
+        answer.totalRating = 0
+        answer.averageRating = 0,
+        answer.ratingCtr = 0,
+        answer.isBrainliest = false,
+
+        // check if question exists
+        questionsRepository.isQuestionExist(Number(questionId))
+        .then(() => usersRepository.getUsername(Number(userId)))
         .then((username) => {
-            // Save the username to the answer
             answer.username = username
-            return answersRepository.addAnswer(Number(userId), Number(questionId), answer)
+            // Save the username to the answer
+            return answersRepository.addAnswer(answer)
         })
         .then((returnAnswer) => {
             // send the answer back
             res.status(200).json({
                 data: returnAnswer
+            })
+        })
+        .catch((e) => {
+            res.status(404).json({
+                error: {
+                    message: e.message
+                }
+            })
+        })
+    },
+
+    // EDITS an answer
+    editAnswer: (req,res) => {
+        const userId = req.query.userId
+        const answerId = req.params.answerId
+        const questionId = req.params.id
+        const newAnswer = req.body.data.newAnswer
+
+        // CHECK if question has the specific answer
+        answersRepository.isQuestionIdAndAnswerIdMatch(Number(questionId), Number(answerId))        // CHECK if question has the specific answer or question exists
+        .then(() => answersRepository.isAnswerIdAndUserIdMatch(Number(answerId), Number(userId)))   // CHECK if user has the authority to edit an answer        
+        .then(() => answersRepository.editAnswer(Number(answerId), newAnswer))                      // EDIT answer
+        .then((updatedAnswer) => {
+            res.status(200).json({
+                data: updatedAnswer
+            })
+        })
+        .catch((e) => {
+            res.status(404).json({
+                error: {
+                    message: e.message
+                }
+            })
+        })
+    },
+
+    // DELETES an answer
+    deleteAnswer : (req,res) => {
+        const userId = req.query.userId
+        const answerId = req.params.answerId
+        const questionId = req.params.id
+
+        answersRepository.isQuestionIdAndAnswerIdMatch(Number(questionId), Number(answerId))        // CHECK if question has the specific answer
+        .then(() => answersRepository.isAnswerIdAndUserIdMatch(Number(answerId), Number(userId)))   // CHECK if user has the authority to edit an answer        
+        .then(() => answersRepository.deleteAnswer(Number(answerId)))                    // DELETE answer
+        .then((deletedAnswer) => {
+            res.status(200).json({
+                data: deletedAnswer
             })
         })
         .catch((e) => {
@@ -293,6 +361,60 @@ const controller = {
         .catch((e) => {
             res.status(404).json({
                 error:{
+                    message: e.message
+                }
+            })
+        })
+    },
+
+    // ADDS a comment to either a question or an answer
+    // parent is a string that is either "question" or "answer"
+    // it denotes if the comment is for a question/answer
+    addComment : (req, res, parent) => {
+        const userId = req.query.userId
+        const questionId = req.params.id
+        const answerId = req.params.answerId
+        const comment = req.body.data
+        console.log(req.params);
+        console.log(req.query);
+        
+        // initialize comment
+        comment.userId = Number(userId)
+        
+        // initialize date
+        const dateObj = new Date()
+        const date = `${dateObj.getDate()}-${dateObj.getMonth()+1}-${dateObj.getFullYear()}`
+        comment.date = date
+
+        if(parent === 'question'){
+            comment.questionId = Number(questionId)
+            comment.answerId = null
+        }
+
+        else if(parent === 'answer'){
+            comment.answerId = Number(answerId)
+            comment.questionId = null
+        }
+
+        // check if question exists
+        questionsRepository.isQuestionExist(Number(questionId))
+        .then(() => {
+            // get username of userId
+            return usersRepository.getUsername(Number(userId))
+        })
+        .then((username) => {
+            comment.username = username
+            // add Comment
+            return commentsRepository.addComment(comment)
+        })
+        .then((returnComment) => {
+            res.status(200).json({
+                data: returnComment
+            })
+        })
+        .catch((e) => {
+            res.status(404).json({
+                error: {
                     message: e.message
                 }
             })
