@@ -94,31 +94,20 @@ const repository = {
         
     },
 
-    //checks if login credentials are registered
-    login: (usernameOrEmail, password) => {
+    // GETS the user based on userId
+    getUserByUserId: (userId) => {
         return new Promise((fulfill, reject) => {
-            let isRegistered = false
-
-            // check if user is registered
-            for(let i = 0; i < users.length; i++){
-                if(users[i].username === usernameOrEmail || users[i].email === usernameOrEmail){
-                    if(users[i].password === password){
-                        isRegistered = true
-                        break
-                    }
-                }
-            }
-
-            if(isRegistered){
-                fulfill()
+            const index = users.map((user) => user.userId).indexOf(userId)
+            if(index > -1) {
+                fulfill(users[index])
             }
             else{
-                reject()
+                reject(new Error('Unable to find user.'))
             }
         })
     },
 
-    // GETS the username based on userId
+    // GETS the username based on userId (to be replaced by getUserByUserId to be general)
     getUsername: (userId) => {
         return new Promise((fulfill, reject) => {
             const index = users.map((user) => user.userId).indexOf(userId)
@@ -130,9 +119,6 @@ const repository = {
                 reject(new Error("Cannot get username."))
             }
         })
-
-
-        
     },
 
     // GETS a password of a username
@@ -162,7 +148,19 @@ const repository = {
         })
     },
 
-
+    updateCurrentPoints : (userId, points) => {
+        return new Promise((fulfill, reject) => {
+            const index = users.map((user) => user.userId).indexOf(userId)
+            // if found
+            if(index > -1){
+                users[index].currentPoints -= points
+                fulfill(users[index])
+            }
+            else{
+                reject("User not found")
+            }
+        })
+    }
 }
 
 module.exports = repository

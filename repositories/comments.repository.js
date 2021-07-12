@@ -7,7 +7,8 @@ let comments = [
         questionId: 1,
         answerId: null,
         comment: "How are we suppose to answer that?",
-        date: '7-10-2021'
+        date: '7-10-2021',
+        lastEdited: ""
     },
     {
         commentId: 2,
@@ -16,7 +17,8 @@ let comments = [
         questionId: 1,
         answerId: null,
         comment: "Same question bro...",
-        date: '7-10-2021'
+        date: '7-10-2021',
+        lastEdited: ""
     },
     {
         commentId: 3,
@@ -25,7 +27,8 @@ let comments = [
         questionId: 1,
         answerId: null,
         comment: "Ewan ko ba tol",
-        date: '7-10-2021'
+        date: '7-10-2021',
+        lastEdited: ""
     },
     {
         commentId: 4,
@@ -34,7 +37,8 @@ let comments = [
         questionId: 7,
         answerId: null,
         comment: "Im confuuuseddd.",
-        date: '7-10-2021'
+        date: '7-10-2021',
+        lastEdited: ""
     },
     {
         commentId: 5,
@@ -61,7 +65,8 @@ let comments = [
         questionId: null,
         answerId: 2,
         comment: "How did you do that?",
-        date: '7-10-2021'
+        date: '7-10-2021',
+        lastEdited: ""
     },
     {
         commentId: 8,
@@ -70,7 +75,8 @@ let comments = [
         questionId: 2,
         answerId: null,
         comment: "That is so cool bro.",
-        date: '7-10-2021'
+        date: '7-10-2021',
+        lastEdited: ""
     },
     {
         commentId: 9,
@@ -79,7 +85,8 @@ let comments = [
         questionId: 7,
         answerId: null,
         comment: "New comment added.",
-        date: '7-10-2021'
+        date: '7-10-2021',
+        lastEdited: ""
     },
 ]
 
@@ -120,7 +127,7 @@ const repository = {
                 commentsCtr++
                 comments.commentId = commentsCtr
        
-                // save answer
+                // save comment
                 comments.push(comment)
                 console.log(comments);
                 fulfill(comment)
@@ -129,7 +136,94 @@ const repository = {
                 reject(new Error("Comment not stored."))
             }
         })
-    }
+    },
+    
+    // check if the commentId and parentId(questionId/answerId) match
+    // parent variable contains a string ('question' | 'answer')
+    isCommentIdAndParentIdMatch: (commentId, parentId, parent) => {
+        return new Promise((fulfill, reject) => {
+            
+            const index = comments.map((comment) => comment.commentId).indexOf(commentId);
+
+            // if found
+            if(index > -1){
+                // only one of them has value. the other is null
+                const storedAnswerId = comments[index].answerId
+                const storedQuestionId = comments[index].questionId
+
+                const storedParentId = parent === 'question' ? storedQuestionId : storedAnswerId
+                if(storedParentId === parentId){
+                    fulfill()
+                }
+                else{
+                    reject(new Error("Comment does not exist."))
+                }
+            }
+            else{
+                reject(new Error("Answer/Question not found."))
+            }
+        })
+    },
+
+    // check if the commentId and userId match
+    isCommentIdAndUserIdMatch: (commentId, userId) => {
+        return new Promise((fulfill, reject) => {
+            const index = comments.map((comment) => comment.commentId).indexOf(commentId);
+            // if found
+            if(index > -1){
+                const storedUserId = comments[index].userId
+                if(storedUserId === userId){
+                    fulfill()
+                }
+                else{
+                    reject(new Error("User does not own the comment."))
+                }
+            }
+            else{
+                reject(new Error("Comment not found."))
+            }
+        })
+    },
+
+    // EDITS A COMMENT BASED ON COMMENTID
+    editComment: (commentId, newComment) => {
+        return new Promise((fulfill, reject) => {
+            const index = comments.map((comment) => comment.commentId).indexOf(commentId);
+
+            // if found
+            if(index > -1){
+                //get date today
+                const dateObj = new Date()
+                const date = `${dateObj.getDate()}-${dateObj.getMonth()+1}-${dateObj.getFullYear()}`
+                comments[index].comment = newComment
+                comments[index].lastEdited = date
+                fulfill(comments[index])
+            }
+            // if NOT found
+            else{
+                reject(new Error("Cannot edit the comment."))
+            }
+        })
+    },
+
+    // DELETES a comment
+    deleteComment : (commentId) => {
+        return new Promise((fulfill, reject) => {
+            const index = comments.map((comment) => comment.commentId).indexOf(commentId)
+
+            // if found
+            if(index > -1){
+                const comment = comments.splice(index,1)
+                console.log(comments);
+                fulfill(comment)
+                
+            }
+            else{
+                reject(new Error("Unable to delete the comment."))
+            }
+        })
+    },
+    
 }
 
 module.exports = repository

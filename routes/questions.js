@@ -61,4 +61,28 @@ router.post('/:id/answers/:answerId/comments', (req, res, next) => {
   controller.addComment(req, res, 'answer')
 })
 
+// EDITS a comment to a question
+router.put('/:id/comments/:commentId', (req, res, next) => {
+  console.log("EDIT comment on a question");
+  controller.editComment(req, res, 'question')
+})
+
+// EDITS a comment to an answer
+router.put('/:id/answers/:answerId/comments/:commentId', (req, res, next) => {
+  console.log("EDIT comment on an answer");
+  controller.editComment(req, res, 'answer')
+})
+
+// DELETES a comment to a question
+router.delete('/:id/comments/:commentId', (req, res, next) => {
+  console.log("DELETE comment on a question");
+  controller.deleteComment(req, res, 'question')
+})
+
+// DELETE a comment to an answer
+router.delete('/:id/answers/:answerId/comments/:commentId', (req, res, next) => {
+  console.log("DELETES comment on an answer");
+  controller.deleteComment(req, res, 'answer')
+})
+
 module.exports = router;

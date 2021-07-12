@@ -8,6 +8,7 @@ let answers = [
         username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
+        lastEdited: "",
         totalRating: 0,
         averageRating: 0,
         ratingCtr: 0,
@@ -20,6 +21,7 @@ let answers = [
         username: "lyzer0101",
         answer: "I have a dream.",
         date: '7-8-2021',
+        lastEdited: "",
         totalRating: 0,
         averageRating: 0,
         ratingCtr: 0,
@@ -32,6 +34,7 @@ let answers = [
         username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
+        lastEdited: "",
         totalRating: 0,
         averageRating: 0,
         ratingCtr: 0,
@@ -44,6 +47,7 @@ let answers = [
         username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
+        lastEdited: "",
         totalRating: 0,
         averageRating: 0,
         ratingCtr: 0,
@@ -56,6 +60,7 @@ let answers = [
         username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
+        lastEdited: "",
         totalRating: 0,
         averageRating: 0,
         ratingCtr: 0,
@@ -68,6 +73,7 @@ let answers = [
         username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
+        lastEdited: "",
         totalRating: 0,
         averageRating: 0,
         ratingCtr: 0,
@@ -80,6 +86,7 @@ let answers = [
         username: "merck123",
         answer: "I have a dream.",
         date: '7-8-2021',
+        lastEdited: "",
         totalRating: 0,
         averageRating: 0,
         ratingCtr: 0,
@@ -97,8 +104,6 @@ const repository = {
     
                 // save answer
                 answers.push(answer)
-                console.log("answer pushed");
-                console.log(answers);
                 fulfill(answer)
             }
             catch{
@@ -129,6 +134,25 @@ const repository = {
         })
     },
 
+    // GET all answers of a specific questionId
+    getAnswersByQuestionId : (questionId) => {
+        return new Promise((fulfill, reject) => {
+            try{
+                let retrievedAnswers = []
+
+                for(let i = 0; i < answers.length; i++){
+                    if(answers[i].questionId === questionId){
+                        retrievedAnswers.push(answers[i])
+                    }
+                }
+                fulfill(retrievedAnswers)
+            }
+            catch{
+                reject(new Error("Cannot retrieve answers on this question."))
+            }
+        })
+    },
+
     // GET all answers of a specific user
     getAnswersByUser : (userId) => {
         return new Promise((fulfill, reject) => {
@@ -148,7 +172,8 @@ const repository = {
         })
     },
 
-    isQuestionIdAndAnswerIdMatch: (questionId, answerId) => {
+    // check if the answerId and questionId match
+    isAnswerIdAndQuestionIdMatch: (answerId, questionId) => {
         return new Promise((fulfill, reject) => {
             const index = answers.map((answer) => answer.answerId).indexOf(answerId);
             // if found
@@ -167,6 +192,7 @@ const repository = {
         })
     },
 
+    // check if the answerId and userId match
     isAnswerIdAndUserIdMatch: (answerId, userId) => {
         return new Promise((fulfill, reject) => {
             const index = answers.map((answer) => answer.answerId).indexOf(answerId);
@@ -215,7 +241,6 @@ const repository = {
             // if found
             if(index > -1){
                 const answer = answers.splice(index,1)
-                console.log(answers);
                 fulfill(answer)
                 
             }
